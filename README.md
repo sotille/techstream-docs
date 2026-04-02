@@ -30,16 +30,16 @@ The following repositories comprise the Techstream Framework Suite:
 
 | Repository | Description | Status |
 |---|---|---|
-| [devsecops-framework](../devsecops-framework) | Core DevSecOps principles, practices, and organizational model | Active |
-| [devsecops-methodology](../devsecops-methodology) | Step-by-step methodology for DevSecOps transformation | Active |
-| [devsecops-maturity-model](../devsecops-maturity-model) | Maturity assessment model for DevSecOps programs | Active |
-| [secure-ci-cd-reference-architecture](../secure-ci-cd-reference-architecture) | Reference architecture for secure CI/CD pipelines | Active |
-| [secure-pipeline-templates](../secure-pipeline-templates) | Reusable pipeline templates for common security patterns | Active |
-| [software-supply-chain-security-framework](../software-supply-chain-security-framework) | Comprehensive guidance for software supply chain security | Active |
-| [compliance-automation-framework](../compliance-automation-framework) | Automated compliance controls and evidence collection | Active |
-| [release-orchestration-framework](../release-orchestration-framework) | Secure release management and deployment orchestration | Active |
-| [cloud-security-devsecops](../cloud-security-devsecops) | Cloud security integrated with DevSecOps practices | Active |
-| [techstream-docs](.) | This documentation portal | Active |
+| [devsecops-framework](https://github.com/sotille/devsecops-framework) | Core DevSecOps principles, practices, and organizational model | Active |
+| [devsecops-methodology](https://github.com/sotille/devsecops-methodology) | Step-by-step methodology for DevSecOps transformation | Active |
+| [devsecops-maturity-model](https://github.com/sotille/devsecops-maturity-model) | Maturity assessment model for DevSecOps programs | Active |
+| [secure-ci-cd-reference-architecture](https://github.com/sotille/secure-ci-cd-reference-architecture) | Reference architecture for secure CI/CD pipelines | Active |
+| [secure-pipeline-templates](https://github.com/sotille/secure-pipeline-templates) | Reusable pipeline templates for common security patterns | Active |
+| [software-supply-chain-security-framework](https://github.com/sotille/software-supply-chain-security-framework) | Comprehensive guidance for software supply chain security | Active |
+| [compliance-automation-framework](https://github.com/sotille/compliance-automation-framework) | Automated compliance controls and evidence collection | Active |
+| [release-orchestration-framework](https://github.com/sotille/release-orchestration-framework) | Secure release management and deployment orchestration | Active |
+| [cloud-security-devsecops](https://github.com/sotille/cloud-security-devsecops) | Cloud security integrated with DevSecOps practices | Active |
+| [techstream-docs](https://github.com/sotille/techstream-docs) | This documentation portal | Active |
 
 ---
 
@@ -51,28 +51,28 @@ The following repositories comprise the Techstream Framework Suite:
 Start with [Introduction](docs/introduction.md) to understand the Techstream philosophy, then review [Architecture](docs/architecture.md) to understand how frameworks interconnect. Use [Roadmap](docs/roadmap.md) for program planning and investment guidance.
 
 **Security Engineers**
-Begin with [Framework](docs/framework.md) for the complete framework portfolio, then navigate to the specific framework repositories that address your immediate domain (e.g., [cloud-security-devsecops](../cloud-security-devsecops) for cloud security, [software-supply-chain-security-framework](../software-supply-chain-security-framework) for supply chain).
+Begin with [Framework](docs/framework.md) for the complete framework portfolio, then navigate to the specific framework repositories that address your immediate domain (e.g., [cloud-security-devsecops](https://github.com/sotille/cloud-security-devsecops) for cloud security, [software-supply-chain-security-framework](https://github.com/sotille/software-supply-chain-security-framework) for supply chain).
 
 **Platform / DevOps Engineers**
-Start with [secure-ci-cd-reference-architecture](../secure-ci-cd-reference-architecture) and [secure-pipeline-templates](../secure-pipeline-templates) for immediate, practical pipeline guidance. Reference [Architecture](docs/architecture.md) for system-level integration context.
+Start with [secure-ci-cd-reference-architecture](https://github.com/sotille/secure-ci-cd-reference-architecture) and [secure-pipeline-templates](https://github.com/sotille/secure-pipeline-templates) for immediate, practical pipeline guidance. Reference [Architecture](docs/architecture.md) for system-level integration context.
 
 **Development Teams**
-Start with [devsecops-framework](../devsecops-framework) for the foundational principles, then [secure-pipeline-templates](../secure-pipeline-templates) for integration with your existing development workflows.
+Start with [devsecops-framework](https://github.com/sotille/devsecops-framework) for the foundational principles, then [secure-pipeline-templates](https://github.com/sotille/secure-pipeline-templates) for integration with your existing development workflows.
 
 **Compliance / GRC Teams**
-Focus on [compliance-automation-framework](../compliance-automation-framework) and the compliance sections of [cloud-security-devsecops](../cloud-security-devsecops). Use [devsecops-maturity-model](../devsecops-maturity-model) for audit-ready maturity assessment.
+Focus on [compliance-automation-framework](https://github.com/sotille/compliance-automation-framework) and the compliance sections of [cloud-security-devsecops](https://github.com/sotille/cloud-security-devsecops). Use [devsecops-maturity-model](https://github.com/sotille/devsecops-maturity-model) for audit-ready maturity assessment.
 
 ### By Use Case
 
 | Use Case | Start Here |
 |---|---|
-| Starting a DevSecOps program from scratch | [devsecops-methodology](../devsecops-methodology) |
-| Assessing current DevSecOps maturity | [devsecops-maturity-model](../devsecops-maturity-model) |
-| Securing CI/CD pipelines | [secure-ci-cd-reference-architecture](../secure-ci-cd-reference-architecture) |
-| Implementing cloud security controls | [cloud-security-devsecops](../cloud-security-devsecops) |
-| Automating compliance | [compliance-automation-framework](../compliance-automation-framework) |
-| Securing the software supply chain | [software-supply-chain-security-framework](../software-supply-chain-security-framework) |
-| Managing secure releases | [release-orchestration-framework](../release-orchestration-framework) |
+| Starting a DevSecOps program from scratch | [devsecops-methodology](https://github.com/sotille/devsecops-methodology) |
+| Assessing current DevSecOps maturity | [devsecops-maturity-model](https://github.com/sotille/devsecops-maturity-model) |
+| Securing CI/CD pipelines | [secure-ci-cd-reference-architecture](https://github.com/sotille/secure-ci-cd-reference-architecture) |
+| Implementing cloud security controls | [cloud-security-devsecops](https://github.com/sotille/cloud-security-devsecops) |
+| Automating compliance | [compliance-automation-framework](https://github.com/sotille/compliance-automation-framework) |
+| Securing the software supply chain | [software-supply-chain-security-framework](https://github.com/sotille/software-supply-chain-security-framework) |
+| Managing secure releases | [release-orchestration-framework](https://github.com/sotille/release-orchestration-framework) |
 | Understanding the full framework ecosystem | [Framework](docs/framework.md) (this portal) |
 
 ---
