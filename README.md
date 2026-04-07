@@ -185,6 +185,7 @@ Focus on [compliance-automation-framework](https://github.com/sotille/compliance
 | Automating compliance | [compliance-automation-framework](https://github.com/sotille/compliance-automation-framework) |
 | Securing the software supply chain | [software-supply-chain-security-framework](https://github.com/sotille/software-supply-chain-security-framework) |
 | Managing secure releases | [release-orchestration-framework](https://github.com/sotille/release-orchestration-framework) |
+| Coordinating incident response across frameworks | [Cross-Framework Incident Response](docs/cross-framework-incident-response.md) |
 | Troubleshooting implementation issues | [Cross-Framework Troubleshooting Guide](docs/troubleshooting-guide.md) |
 | Customizing frameworks for industry requirements | [Framework Customization Guide](docs/framework-customization-guide.md) |
 | Understanding the full framework ecosystem | [Framework](docs/framework.md) (this portal) |
@@ -209,6 +210,20 @@ techstream-docs/
     ├── best-practices.md             ← Meta best practices for framework adoption
     └── roadmap.md                    ← Future roadmap, glossary, documentation index
 ```
+
+---
+
+## Learning Resources
+
+The Techstream Book Series and hands-on lab companion provide a structured learning path through the full Techstream framework ecosystem.
+
+- **[Book 1: DevSecOps — Foundations & Transformation](https://www.techstream.app/learn)** — Covers DevSecOps culture, the TDMM maturity model, and organizational transformation methodology.
+- **[Book 2: Securing CI/CD & the Software Supply Chain](https://www.techstream.app/learn)** — Covers pipeline security, SLSA, SBOM, OIDC authentication, and software supply chain integrity.
+- **[Book 3: Cloud-Native Security for DevSecOps](https://www.techstream.app/learn)** — Covers cloud security posture management, zero trust, CNAPP, and compliance automation.
+- **[Book 4: Release Engineering & DevSecOps Governance](https://www.techstream.app/learn)** — Covers GitOps, progressive delivery, release governance, and DORA metrics.
+- **[Hands-On Labs (techstream-learn/)](https://www.techstream.app/learn)** — Practical lab exercises for all four volumes.
+- **[Book Series Overview (VOLUMES.md)](../techstream-books/VOLUMES.md)** — Complete index and metadata for all four Techstream book volumes.
+- **[Techstream Platform](https://www.techstream.app)** — The central portal for all Techstream frameworks, documentation, and learning resources.
 
 ---
 

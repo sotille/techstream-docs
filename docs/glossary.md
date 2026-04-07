@@ -130,6 +130,49 @@ A build that, given identical inputs, produces bit-for-bit identical output. Rep
 
 ---
 
+## AI-Assisted Development and Agentic Systems
+
+**LLM (Large Language Model)**
+A machine learning model trained on large text corpora that generates text completions, code, or structured outputs based on a prompt. In software development contexts, LLMs power AI coding assistants (GitHub Copilot, Amazon Q, Cursor) and are embedded in code review tools, CI/CD agents, and development workflows. LLM outputs are probabilistic — the same prompt may produce different outputs on repeated invocations, and outputs may be plausible-sounding but incorrect.
+
+**AI Coding Assistant**
+A tool that uses an LLM to suggest code completions, generate functions, explain code, or produce tests within a developer's editor. AI coding assistants increase developer velocity but introduce security risks: they may suggest insecure patterns, hardcode credentials, introduce hallucinated dependencies, or generate code that passes syntactic review but fails semantic security analysis. SAST must run on all AI-generated code.
+
+**Slopsquatting (Hallucinated Dependency)**
+A supply chain attack vector in which an attacker registers a package with a name that an LLM is known to hallucinate (invent) when suggesting import statements. When a developer accepts an AI-suggested import without verifying the package name against the actual registry, they may install a malicious package with a plausible-sounding but fabricated name. Distinct from typosquatting (which relies on human typo), slopsquatting exploits AI hallucination patterns. Mitigation: SCA tools configured to flag newly registered packages with low download counts or recent registration dates; mandatory human review of all new package introductions.
+
+**Agentic Pipeline**
+A CI/CD pipeline in which one or more steps are executed by an autonomous AI agent that can use tools (file read/write, shell execution, registry push, deployment triggers) based on LLM-driven decisions rather than static pipeline configuration. Agentic pipelines can accelerate complex workflows but introduce authorization risks: the agent must have its tool access bounded by an explicit tool access manifest, and must not be able to approve its own outputs or trigger production deployments without human oversight.
+
+**Tool Access Manifest**
+A declarative, version-controlled document that lists the specific tools (functions, APIs, shell commands) an AI agent is permitted to invoke, the scope of each permission, and whether human approval is required before invocation. Tool access manifests are enforced at the agent authorization layer — not solely in the LLM's system prompt, which can be overridden by prompt injection. See: [secure-ci-cd-reference-architecture: ai-assisted-development.md](../../secure-ci-cd-reference-architecture/docs/ai-assisted-development.md).
+
+**Prompt Injection**
+An attack in which malicious content in data processed by an LLM (e.g., in a source code file, commit message, issue comment, or API response) causes the LLM to execute unintended instructions. In agentic pipeline contexts, prompt injection can cause an AI agent to invoke tools it should not, exfiltrate data, or bypass authorization controls. Mitigations: strict input/output schema validation, tool access manifests enforced at the infrastructure layer, and treating all LLM output as untrusted until validated by deterministic checks.
+
+**Adversarial Input**
+An input crafted to cause a machine learning model to produce incorrect, unsafe, or attacker-controlled output. In classification and vision models, adversarial inputs are often imperceptible perturbations that cause misclassification. In LLMs, adversarial inputs overlap with prompt injection. In production ML systems, input validation and output guardrails are the primary defenses.
+
+**ML-SBOM (Model Bill of Materials)**
+A structured inventory of a machine learning model's components: the base model or model family, training dataset references, fine-tuning datasets, framework versions (PyTorch, TensorFlow), dependent libraries, and training infrastructure. ML-SBOMs extend the traditional SBOM concept to cover ML-specific supply chain components. Format: CycloneDX 1.6+ (which added ML component types) or a custom schema. See: ML-1 and ML-2 controls in [software-supply-chain-security-framework: framework.md](../../software-supply-chain-security-framework/docs/framework.md).
+
+**Model Provenance**
+A verifiable record of a machine learning model's origin: the source repository or model hub, the version or commit hash, the training data lineage, and the signing identity that attested the model at publication. Model provenance enables consumers to verify that a model was produced by a trusted source and has not been modified since attestation. Analogous to SLSA provenance for software artifacts.
+
+**Weight Poisoning**
+A type of machine learning supply chain attack in which an attacker modifies the numerical weights of a trained model to introduce a backdoor — a behavior that is triggered by a specific input pattern (trigger) and causes the model to produce attacker-controlled outputs for that input. Weight poisoning attacks are difficult to detect through behavioral testing without the specific trigger pattern. Mitigations: model hash verification, model provenance attestation, restricted model sourcing from trusted registries.
+
+**SafeTensors**
+A file format for storing machine learning model weights developed by Hugging Face, designed as a safer alternative to pickle-based formats (`.pkl`, `.pt`, `.bin`). Traditional Python pickle files can execute arbitrary code when deserialized; SafeTensors contains only tensor data with no executable code path. Using SafeTensors for model storage eliminates the code execution risk inherent in pickle-based model loading. Techstream recommends SafeTensors as the required format for all models stored in the private model registry.
+
+**Inference-Time Security**
+Security controls applied at the point where a machine learning model processes input and generates output. Inference-time security includes: input validation (schema enforcement, content filtering, anomaly detection), output validation (type checking, length limits, content policy enforcement), rate limiting, access control, and audit logging of all inference requests. Distinct from training-time and supply-chain-time security, which apply earlier in the ML lifecycle.
+
+**AI Agent Authorization Boundary**
+The set of explicitly defined constraints on what an AI agent can do: which tools it can invoke, which environments it can access, which resources it can modify, and under what conditions human approval is required. Authorization boundaries must be enforced at the IAM/infrastructure layer — not solely through prompt-level instructions that the model might ignore or that an adversary might override through prompt injection.
+
+---
+
 ## Secrets and Credentials
 
 **Secret**

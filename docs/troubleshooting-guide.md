@@ -21,6 +21,7 @@ Use this guide when:
 6. [Maturity Assessment — Scoring Disputes](#6-maturity-assessment--scoring-disputes)
 7. [Tool Interoperability Issues](#7-tool-interoperability-issues)
 8. [Cross-Framework Integration Issues](#8-cross-framework-integration-issues)
+9. [AI Pipeline and Model Supply Chain Issues](#9-ai-pipeline-and-model-supply-chain-issues)
 
 ---
 
@@ -132,6 +133,46 @@ paths:
   # In pipeline:
   trivy image --ignore-unfixed --exit-code 1 --severity CRITICAL <image>
   ```
+
+---
+
+### 1.5 OIDC federation token failures in GitHub Actions
+
+**Symptom:** The pipeline fails with an error like `Error: Credentials could not be loaded` or `Error: The audience is invalid` when attempting to assume an AWS IAM role or GCP service account via OIDC.
+
+**Diagnosis steps:**
+1. Confirm `permissions: id-token: write` is set in the job (not just at the workflow level):
+   ```yaml
+   jobs:
+     deploy:
+       permissions:
+         id-token: write
+         contents: read
+   ```
+2. Check the OIDC subject claim produced by GitHub matches the trust policy in the IAM role:
+   ```bash
+   # Print the OIDC token claims (base64-decode the middle section)
+   echo $ACTIONS_ID_TOKEN_REQUEST_TOKEN | cut -d. -f2 | base64 -d 2>/dev/null | python3 -m json.tool
+   ```
+3. Verify the IAM trust policy condition matches the actual subject claim format:
+   ```
+   Expected: repo:<org>/<repo>:ref:refs/heads/main
+   Actual:   repo:<org>/<repo>:environment:production
+   ```
+   The subject changes when an environment is configured — if your IAM role's trust policy conditions `repo:org/repo:ref:refs/heads/main` but the job runs in the `production` environment, the subject becomes `repo:org/repo:environment:production`.
+4. Check the AWS region — `aws-actions/configure-aws-credentials` v2+ requires an explicit `aws-region` input.
+
+**Common causes and solutions:**
+
+| Error | Root Cause | Fix |
+|-------|-----------|-----|
+| `Error: Credentials could not be loaded` | `id-token: write` permission not set on the job | Add `permissions: id-token: write` to the job block |
+| `Error: Could not assume role` | Trust policy subject condition does not match actual subject claim | Update IAM trust policy condition; print the token claims to find the actual subject |
+| `Error: The audience is invalid` | `audience` parameter mismatch between the action and the role trust policy | Set `audience: sts.amazonaws.com` (AWS) or match the trust policy's `aud` condition |
+| `Error: Not authorized to perform sts:AssumeRoleWithWebIdentity` | Trust policy condition is too restrictive (e.g., branch condition blocks a tag-triggered run) | Add condition for `ref:refs/tags/*` if deploying from tags, or use a wildcard with careful scope |
+| Token works in staging but not production | Different IAM roles per environment, trust policy for production is configured differently | Compare trust policies between staging and production IAM roles |
+
+**Best practice:** Pin each job to its own dedicated IAM role with a branch or environment condition, never a wildcard subject `*`. See: [OIDC Federation Guide](../../secure-ci-cd-reference-architecture/docs/oidc-federation-guide.md).
 
 ---
 
@@ -463,7 +504,109 @@ Use both assessments together:
 
 ---
 
-## Diagnostic Toolkit
+## 9. AI Pipeline and Model Supply Chain Issues
+
+### 9.1 SCA alert fires on a package introduced by an AI coding assistant (slopsquatting detection)
+
+**Symptom:** The SCA gate (configured for slopsquatting detection) flags a newly introduced package as suspicious — low download count, recent registration date, or no community history. The developer insists the package is legitimate because the AI assistant suggested it and it installs without error.
+
+**Important:** An installable package with low downloads is the expected profile of a slopsquatting attack. The package installing successfully does not confirm it is safe.
+
+**Diagnosis steps:**
+1. Check the package registry entry directly:
+   - npm: `npm view <package-name>` — check `_npmUser.created`, `dist-tags`, `versions` count, weekly downloads
+   - PyPI: `pip index versions <package-name>` + check PyPI page for project history, author, GitHub link
+   - Go: check pkg.go.dev for module history and import path legitimacy
+2. Verify whether the package name matches a known, established library (check for similar but different names — `requests` vs `requestss`, `boto3` vs `botosd3`).
+3. Search for the intended functionality in the registry — did the developer mean to use a different, well-established package that the AI misnamed?
+4. Check whether the package is re-exported by or depends on the hallucinated package name. Some attacks re-export a legitimate package while adding malicious code.
+
+**Resolution:**
+
+| Finding | Action |
+|---------|--------|
+| Package is legitimate but newly published (e.g., team's own internal package now on public registry) | Add package to SCA allowlist with documented justification; verify the package is what the team intended |
+| Package is a different name than the intended library | Remove the package; install the correct package; review all imports in the AI-generated code |
+| Package is confirmed malicious | Immediately revoke developer machine credentials; audit recent commits for the package in any repository; treat as a supply chain compromise (Playbook 2 in incident-response-playbook.md) |
+| Package name matches a legitimate package but author/publisher differs | Treat as potential name-squatting; do not install; file a report with the registry; document the block |
+
+**Systemic fix:** Add a required human review step for all new package introductions in your CODEOWNERS configuration. The `.github/CODEOWNERS` entry should require security team review for changes to `package.json`, `requirements.txt`, `go.mod`, and similar dependency manifests.
+
+---
+
+### 9.2 AI pipeline agent fails to invoke a tool or produces an authorization error
+
+**Symptom:** An AI pipeline agent step fails with a permission denied error, tool not found, or the agent reports it cannot complete its task due to missing access.
+
+**This is expected behavior when authorization boundaries are correctly enforced.** The agent is blocked because its tool access manifest restricts the invoked tool. Do not expand permissions to resolve this — diagnose why the agent is requesting a tool outside its declared scope.
+
+**Diagnosis steps:**
+1. Read the agent's tool access manifest (e.g., `agent-permissions.yaml`) and compare the failed tool call to the declared allowed tools.
+2. Review the agent's audit log (required by control 11.6 in the hardening checklist) — what tool was invoked, what input was provided, what error was returned?
+3. Determine whether the tool invocation was part of the intended workflow or whether the agent deviated from expected behavior:
+   - **Expected tool, correct scope:** Update the tool access manifest through a standard change process (not by directly expanding permissions in the failing environment).
+   - **Unexpected tool, out-of-scope:** Investigate the agent's prompt and the inputs it processed for prompt injection. Review whether a data source the agent processed contained instructions to invoke the unauthorized tool.
+
+**Common authorization errors and their meanings:**
+
+| Error | Meaning | Action |
+|-------|---------|--------|
+| `Tool 'deploy_production' not in allowed_tools` | Agent attempted production deployment — not in its tool access manifest | Expected block. Do not add. Review why the agent attempted this. |
+| `IAM: AccessDenied on sts:AssumeRole` | Agent's IAM role does not have permission for the attempted action | Verify the action is within the agent's intended scope before updating IAM |
+| `Tool requires human_approval: true` | Tool invocation requires human confirmation before proceeding | Ensure the approval workflow is configured; check notification delivery (see Section 5.2) |
+| `Environment 'production' not accessible from this agent context` | Agent identity bound to non-production environments only | Correct behavior — production access requires a separate, human-approved agent identity |
+
+**Prompt injection investigation:**
+```bash
+# Review agent input log for suspicious content patterns
+grep -i "ignore previous instructions\|system prompt\|tool call\|invoke\|execute" agent-input-log.txt
+# Check for base64 or unicode-encoded instructions in inputs
+grep -E '[A-Za-z0-9+/]{50,}={0,2}' agent-input-log.txt | base64 -d 2>/dev/null
+```
+
+---
+
+### 9.3 Model hash verification fails before deployment
+
+**Symptom:** The pre-deployment check script (from Stage 12 in the pipeline or the Playbook 5 recovery procedure) reports that the model file's SHA-256 hash does not match the registered value in the model registry or the Cosign attestation.
+
+**This is a critical security signal — do not override this check.** A hash mismatch on a model file means either the model was modified after registration, or the registered hash was computed incorrectly.
+
+**Diagnosis steps:**
+1. Identify when the hash was last verified successfully:
+   ```bash
+   # Retrieve the expected hash from the model registry
+   aws s3api head-object --bucket model-registry --key models/classifier/v2.3/model.safetensors \
+     --query 'Metadata.sha256' --output text
+
+   # Compute the current hash of the file
+   sha256sum model.safetensors
+   ```
+2. Check the Cosign attestation for the registered model hash:
+   ```bash
+   cosign verify-attestation \
+     --type https://techstream.io/attestations/model-hash/v1 \
+     --certificate-identity-regexp "^https://github.com/<org>/" \
+     --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+     <REGISTRY>/<MODEL_IMAGE>@<DIGEST>
+   ```
+3. Determine whether the mismatch is in the registry record or the file:
+   - If the registry record hash differs from the Cosign attestation hash: the registry record was modified outside the normal pipeline.
+   - If both registry and attestation agree but differ from the current file: the file was modified after signing.
+   - If the mismatch is consistent (same wrong hash every time): the hash may have been computed on a different version of the file (e.g., before/after serialization format conversion).
+
+**Response by root cause:**
+
+| Root Cause | Response |
+|-----------|---------|
+| File modified after signing | Treat as potential model tampering — initiate Playbook 5 (AI/ML Model Supply Chain Incident) in [incident-response-playbook.md](../../software-supply-chain-security-framework/docs/incident-response-playbook.md) |
+| Registry record modified outside pipeline | Audit registry access logs; rotate registry credentials; re-register model through pipeline |
+| Hash computed on different serialization | Re-verify hash computation procedure; standardize to hash the final `.safetensors` file after conversion |
+| CI pipeline computed hash on intermediate file | Fix the pipeline hash step to reference the final output file; do not deploy until re-signed |
+
+**Do not deploy the model until the hash mismatch is resolved and the model's provenance is confirmed.** A model with an unresolved hash mismatch must be treated as untrusted.
+
+---
 
 When troubleshooting issues not covered in this guide, these commands provide useful diagnostic context:
 
