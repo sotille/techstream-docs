@@ -18,6 +18,8 @@ The following incident types are likely to involve multiple Techstream framework
 | **Production deployment of vulnerable artifact** (CVE discovered post-deployment) | Release Orchestration, DevSecOps Framework | Supply Chain Security, Cloud Security |
 | **Compliance evidence integrity breach** (tampering with audit evidence, unauthorized access to evidence store) | Compliance Automation | Cloud Security, Secure CI/CD |
 | **Secrets exposure** (credentials committed to SCM, exfiltrated from pipeline) | DevSecOps Framework (Secret Lifecycle), Secure CI/CD | All frameworks |
+| **AI agent unauthorized action** (agent executes out-of-scope tools, prompt injection, agent escalates permissions) | AI DevSecOps Framework | Forensics and IR Framework, Secure CI/CD |
+| **Multi-domain compromise requiring forensic investigation** (any incident spanning pipeline + cloud + artifacts) | Forensics and IR Framework | All affected domain frameworks |
 
 ---
 
@@ -43,6 +45,7 @@ The IC owns the overall response. During a multi-framework incident, the IC coor
 | Release and deployment | Release Engineering Lead |
 | Compliance / evidence | Compliance Engineer or GRC Lead |
 | Detection and forensics | SOC Analyst (Tier 2+) or Incident Responder |
+| AI/agent systems | AI Security Engineer or Platform Engineer with AI pipeline ownership |
 
 ### Supporting Functions
 

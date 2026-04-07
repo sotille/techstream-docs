@@ -60,6 +60,15 @@ Static analysis of Infrastructure as Code definitions (Terraform, CloudFormation
 **CSPM (Cloud Security Posture Management)**
 Continuous assessment of cloud infrastructure configuration against security best practices and compliance benchmarks. CSPM tools query cloud provider APIs to detect misconfigurations such as public S3 buckets, overpermissive security groups, and disabled logging. Common tools: Prowler, ScoutSuite, Wiz, Orca Security. Cloud-native: AWS Security Hub, Azure Defender for Cloud, GCP Security Command Center.
 
+**CNAPP (Cloud-Native Application Protection Platform)**
+A unified security platform that consolidates multiple cloud security tool categories — CSPM, CWPP (Cloud Workload Protection Platform), CIEM, KSPM, and IaC scanning — into a single agent or agentless solution. CNAPP platforms correlate findings across layers to identify attack paths that point tools cannot detect in isolation. Leading CNAPP platforms: Wiz, Orca Security, Prisma Cloud, Lacework, Defender for Cloud. See: [cloud-security-devsecops: cnapp-integration.md](../../cloud-security-devsecops/docs/cnapp-integration.md).
+
+**CIEM (Cloud Infrastructure Entitlement Management)**
+A tool category focused on discovering, analyzing, and remediating excessive permissions in cloud IAM configurations. CIEM tools map effective permissions (what an identity can actually do, accounting for all attached policies, inherited roles, and service control policies) and identify privilege escalation paths. CIEM is a component of CNAPP platforms and a dedicated capability in tools such as Wiz, CrowdStrike Falcon, and Authomize. CIEM addresses the gap between what IAM permissions are configured and what the principle of least privilege requires.
+
+**SPIFFE/SPIRE**
+SPIFFE (Secure Production Identity Framework for Everyone) is a CNCF standard for cryptographic workload identity. SPIRE (SPIFFE Runtime Environment) is its reference implementation. SPIFFE assigns a URI-format identity (`spiffe://trust-domain/workload-path`) to workloads and issues short-lived X.509 certificates (SVIDs) verified by platform attestation rather than stored secrets. Used as the identity layer for service mesh mTLS and zero trust workload-to-workload authentication. See also: Workload Identity.
+
 **Penetration Testing**
 A structured, human-conducted security assessment that simulates attacker techniques to identify vulnerabilities not detected by automated tools. Penetration tests are conducted periodically (typically annually or semi-annually) by qualified testers with defined scope and rules of engagement. Contrast with automated security testing, which runs continuously in the pipeline.
 

@@ -52,6 +52,26 @@ Techstream operates at the intersection of security engineering and software del
 
 ---
 
+## Ecosystem Architecture
+
+The Techstream ecosystem is organized into four layers. Understanding which layer to use for a given task prevents confusion between production guidance and learning material.
+
+| Layer | Location | Purpose | Audience |
+|-------|----------|---------|----------|
+| **Layer 1 — Framework Repos** | This repository + 9 others | Enterprise reference documentation, architecture guidance, and technical depth | Engineering teams, architects, security engineers |
+| **Layer 2 — Learning Companion** | [techstream-learn/](../techstream-learn/) | Hands-on labs and exercises — simplified, executable, < 60 min each | Practitioners learning the frameworks |
+| **Layer 3 — Book Manuscripts** | [techstream-books/](../techstream-books/) | Four-volume book series: extended technical narrative with case studies | Readers of the Techstream book series |
+| **Layer 4 — Enterprise Templates** | [techstream-enterprise/](../techstream-enterprise/) | Production-ready pipeline templates, compliance packs, IaC baselines | Teams in regulated or enterprise environments |
+
+**Layer boundaries matter:**
+
+- Layer 1 (this layer) contains the authoritative technical reference. It is the source of truth for all decisions, terminology, and architectural guidance.
+- Layer 2 (techstream-learn) contains **learning-only** examples. Lab examples are simplified and intentionally not production-ready. Do not copy lab code into production.
+- Layer 4 (techstream-enterprise) contains **production-ready** templates. Use these when you are ready to implement.
+- Layers 3 and 4 are private repositories. Contact Techstream for access.
+
+---
+
 ## Framework Repository Index
 
 The following repositories comprise the Techstream Framework Suite:
@@ -67,6 +87,8 @@ The following repositories comprise the Techstream Framework Suite:
 | [compliance-automation-framework](https://github.com/sotille/compliance-automation-framework) | Automated compliance controls and evidence collection | Active |
 | [release-orchestration-framework](https://github.com/sotille/release-orchestration-framework) | Secure release management and deployment orchestration | Active |
 | [cloud-security-devsecops](https://github.com/sotille/cloud-security-devsecops) | Cloud security integrated with DevSecOps practices | Active |
+| [forensics-and-incident-response-framework](https://github.com/sotille/forensics-and-incident-response-framework) | Evidence preservation, compromise investigation, and agent forensics across pipeline, cloud, supply chain, and AI systems | Active |
+| [ai-devsecops-framework](https://github.com/sotille/ai-devsecops-framework) | Security controls for AI-assisted development, agentic pipelines, and LLM systems in the software delivery lifecycle | Active |
 | [techstream-docs](https://github.com/sotille/techstream-docs) | This documentation portal | Active |
 
 ---
@@ -93,6 +115,10 @@ graph TD
 
     %% Compliance and governance layer
     CAF["compliance-automation-framework\n(Compliance Automation)"]
+
+    %% Cross-cutting layers
+    FIRF["forensics-and-incident-response-framework\n(Forensics & IR)"]
+    AIDF["ai-devsecops-framework\n(AI & Agentic Security)"]
 
     %% Central docs
     TSD["techstream-docs\n(Documentation Portal)"]
@@ -121,6 +147,17 @@ graph TD
     CSD --> DMM
     CAF --> DMM
 
+    %% Forensics consumes evidence from all pipeline/cloud/supply chain frameworks
+    SCICD --> FIRF
+    SSC --> FIRF
+    CSD --> FIRF
+    AIDF --> FIRF
+
+    %% AI framework extends pipeline and supply chain security
+    SCICD --> AIDF
+    SSC --> AIDF
+    DSF --> AIDF
+
     %% Docs portal links all
     TSD -.-> DSF
     TSD -.-> DSM
@@ -131,18 +168,22 @@ graph TD
     TSD -.-> CSD
     TSD -.-> CAF
     TSD -.-> ROF
+    TSD -.-> FIRF
+    TSD -.-> AIDF
 
     %% Styling
     classDef foundation fill:#e8f4f8,stroke:#2196F3,stroke-width:2px
     classDef pipeline fill:#f0f8e8,stroke:#4CAF50,stroke-width:2px
     classDef domain fill:#fff8e8,stroke:#FF9800,stroke-width:2px
     classDef compliance fill:#fef0f0,stroke:#F44336,stroke-width:2px
+    classDef crosscutting fill:#fdf4ff,stroke:#7B1FA2,stroke-width:2px
     classDef portal fill:#f5f0ff,stroke:#9C27B0,stroke-width:2px,stroke-dasharray:5
 
     class DSF,DSM,DMM foundation
     class SCICD,SPT,ROF pipeline
     class SSC,CSD domain
     class CAF compliance
+    class FIRF,AIDF crosscutting
     class TSD portal
 ```
 
@@ -151,6 +192,7 @@ graph TD
 - **Pipeline and delivery layer** (green): Use these frameworks to secure the software delivery pipeline. `secure-pipeline-templates` provides immediately deployable artifacts; the others provide architecture and governance guidance.
 - **Domain security layer** (orange): Deep-dive frameworks for specific security domains — cloud infrastructure and software supply chain.
 - **Compliance layer** (red): `compliance-automation-framework` is the evidence collection consumer of all other frameworks — it maps controls from every other framework to compliance requirements.
+- **Cross-cutting layer** (purple): `forensics-and-incident-response-framework` and `ai-devsecops-framework` span all other layers. Forensics depends on evidence generated by every other framework; AI security extends pipeline, supply chain, and runtime security controls for AI/agentic systems.
 
 ---
 
@@ -185,6 +227,8 @@ Focus on [compliance-automation-framework](https://github.com/sotille/compliance
 | Automating compliance | [compliance-automation-framework](https://github.com/sotille/compliance-automation-framework) |
 | Securing the software supply chain | [software-supply-chain-security-framework](https://github.com/sotille/software-supply-chain-security-framework) |
 | Managing secure releases | [release-orchestration-framework](https://github.com/sotille/release-orchestration-framework) |
+| Investigating a security incident (pipeline, cloud, supply chain) | [forensics-and-incident-response-framework](https://github.com/sotille/forensics-and-incident-response-framework) |
+| Securing AI-assisted development or agentic pipelines | [ai-devsecops-framework](https://github.com/sotille/ai-devsecops-framework) |
 | Coordinating incident response across frameworks | [Cross-Framework Incident Response](docs/cross-framework-incident-response.md) |
 | Troubleshooting implementation issues | [Cross-Framework Troubleshooting Guide](docs/troubleshooting-guide.md) |
 | Customizing frameworks for industry requirements | [Framework Customization Guide](docs/framework-customization-guide.md) |

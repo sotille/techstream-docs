@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a comprehensive reference for all nine frameworks in the Techstream DevSecOps Suite. For each framework, it describes the purpose, target audience, key capabilities, integration points, and when to use it. This document is the go-to reference when you need to understand which framework addresses a specific need, or when you want to understand the complete scope of what the Techstream suite covers.
+This document provides a comprehensive reference for all eleven frameworks in the Techstream DevSecOps Suite. For each framework, it describes the purpose, target audience, key capabilities, integration points, and when to use it. This document is the go-to reference when you need to understand which framework addresses a specific need, or when you want to understand the complete scope of what the Techstream suite covers.
 
 ---
 
@@ -404,6 +404,96 @@ This framework recognizes that cloud environments introduce specific security ch
 - **secure-pipeline-templates**: Templates for IaC scanning, container scanning, and cloud security testing
 - **compliance-automation-framework**: Cloud security findings (Prowler, CSPM) serve as compliance evidence
 - **software-supply-chain-security-framework**: Container image supply chain is a cloud security concern
+
+---
+
+## Framework 10: Forensics and Incident Response Framework
+
+**Repository**: `forensics-and-incident-response-framework`
+
+### Summary
+
+The Forensics and Incident Response Framework provides the investigation methodology, evidence infrastructure, and playbooks required to conduct effective forensic investigations across DevSecOps environments. It addresses a challenge unique to cloud-native delivery: evidence is ephemeral by design (containers terminated, runners destroyed, logs rotated), yet regulatory and operational requirements demand reproducible, tamper-evident investigation records.
+
+The framework covers six investigation domains: pipeline forensics, cloud and container forensics, software supply chain forensics, agent forensics (a discipline addressing AI agent behavior), evidence chain of custody, and legal hold procedures. It introduces the Forensics Readiness Score — a five-level maturity model for assessing an organization's ability to preserve and reconstruct evidence before an incident occurs.
+
+### Target Audience
+
+- Incident response teams investigating multi-domain DevSecOps breaches
+- Security engineers establishing forensic readiness infrastructure
+- SOC analysts conducting post-incident investigations in cloud-native environments
+- Compliance and legal teams managing evidence for regulatory investigations
+- Platform engineers designing evidence preservation into CI/CD systems
+
+### Key Capabilities
+
+- **8-Phase IR Lifecycle**: Detect → Triage → Contain → Preserve → Investigate → Eradicate → Recover → Learn, with domain-specific checklists per phase
+- **Forensics Readiness Score**: 5-level model (Ad Hoc → Instrumented → Evidenced → Repeatable → Continuous) with self-assessment criteria
+- **Pipeline Forensics Playbooks**: PL-01 through PL-08, including AI/LLM pipeline manipulation (PL-07) and agentic unauthorized action (PL-08)
+- **Agent Forensics**: Playbooks AF-01 through AF-04 for investigating AI agent scope violations, prompt injection incidents, unauthorized tool use, and cross-agent compromise
+- **Immutable Evidence Infrastructure**: S3 Object Lock, Azure Immutable Storage, Rekor transparency log, RFC 3161 timestamping
+- **Supply Chain Forensics**: SBOM-as-evidence, SLSA provenance reconstruction, Cosign/Rekor chain of custody
+- **Legal Hold Procedures**: Trigger conditions, GDPR conflict resolution, escalation matrix, and hold notice templates
+
+### When to Use It
+
+- When investigating a security incident involving CI/CD pipelines, cloud infrastructure, supply chain artifacts, or AI agents
+- When establishing forensic readiness infrastructure before an incident occurs
+- When designing evidence preservation requirements for a new pipeline or cloud environment
+- When preparing for regulatory investigations requiring audit evidence under legal hold
+
+### Integration with Other Frameworks
+
+- **forensics-and-incident-response-framework** consumes evidence produced by all other frameworks — it is the cross-cutting forensic layer
+- **secure-ci-cd-reference-architecture**: Pipeline audit logs and artifact attestations are primary forensic evidence sources
+- **software-supply-chain-security-framework**: SBOM, SLSA provenance, and Cosign signatures are supply chain forensic artifacts
+- **cloud-security-devsecops**: CloudTrail, GuardDuty findings, and VPC flow logs feed cloud forensic investigations
+- **ai-devsecops-framework**: Agent audit trails and tool call logs are the primary source for agent forensics playbooks
+
+---
+
+## Framework 11: AI and Agentic Systems Security Framework
+
+**Repository**: `ai-devsecops-framework`
+
+### Summary
+
+The AI and Agentic Systems Security Framework defines the security controls required when AI models and autonomous agents are integrated into the software delivery lifecycle. It addresses an emerging trust inversion problem: as AI components gain the ability to take actions (commit code, trigger pipelines, create pull requests, invoke cloud APIs), the security assumptions of traditional DevSecOps — human intent, visible authorization, audit by action — break down.
+
+The framework covers five integration layers, from AI-assisted development tools in the developer environment through autonomous agents operating in production. It provides control frameworks for prompt injection defense, agent authorization, pipeline security gates, model supply chain integrity, and AI application security. It includes a full STRIDE threat model applied to LLM/agentic systems with AI-specific threat categories beyond the standard six.
+
+### Target Audience
+
+- Security engineers securing AI-integrated development workflows and agentic pipelines
+- Platform engineers designing authorization and audit infrastructure for AI agents
+- DevSecOps teams adopting AI coding assistants, automated code review, or LLM-driven triage
+- Architects designing agentic applications with tool use capabilities
+- Red teams assessing prompt injection and agent authorization control effectiveness
+
+### Key Capabilities
+
+- **AI Integration Surface**: Structured taxonomy of AI entry points across 5 pipeline layers, from IDE plugins to production autonomous agents
+- **Prompt Injection Defense**: Complete DevSecOps attack surface mapping (git commits, PR descriptions, CVE text, SBOM metadata); 6-layer defense-in-depth with prompt canary implementation
+- **Agent Authorization Framework**: Principle of Least Authority (POLA) for agents; tool authorization policy YAML schema; role taxonomy (reviewer, triage, remediation, monitor); approval gate requirements
+- **Agent Audit Trail Specification**: Minimum viable audit record format; immutable logging patterns for AWS and Kubernetes; system prompt versioning; session replay capability
+- **STRIDE Threat Model for AI**: All 6 STRIDE categories applied to LLM systems, plus 4 AI-specific threat categories: jailbreak, slopsquatting, model collapse, specification gaming
+- **Model Supply Chain**: Model provenance verification, modelscan for serialization attack detection, Hugging Face model scanning, fine-tuning dataset integrity
+- **Pipeline Controls**: Platform-specific guidance (GitHub Actions, GitLab CI, Jenkins); circuit breaker pattern; Python input sanitization; AI pipeline security checklist
+
+### When to Use It
+
+- When integrating AI coding assistants, automated code reviewers, or LLM-driven security triage into the development pipeline
+- When designing agent authorization policies for autonomous pipeline components
+- When assessing prompt injection risk across AI-integrated workflows
+- When establishing audit trail and forensic readiness for AI agent actions
+- When evaluating model supply chain integrity for fine-tuned or third-party models
+
+### Integration with Other Frameworks
+
+- **secure-ci-cd-reference-architecture**: AI pipeline components are secured using the same pipeline security principles; agent actions generate pipeline audit events
+- **software-supply-chain-security-framework**: AI models are software supply chain components requiring provenance, scanning, and signing
+- **forensics-and-incident-response-framework**: Agent audit trails feed agent forensics playbooks (AF-01 through AF-04); model supply chain incidents are a forensic investigation domain
+- **devsecops-framework**: Agent authorization policy is an extension of the least-privilege and separation-of-duties principles defined in the core framework
 
 ---
 

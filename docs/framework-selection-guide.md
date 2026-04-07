@@ -43,11 +43,21 @@ What is your most urgent need?
 │   └─ Start with: release-orchestration-framework
 │       Then add: secure-pipeline-templates → devsecops-framework
 │
-└─ We are adopting AI coding assistants or deploying AI/LLM-powered applications
-    └─ Start with: secure-ci-cd-reference-architecture (ai-assisted-development.md)
-        Then add: software-supply-chain-security-framework (ML-1/ML-2/ML-3 controls)
-                  → devsecops-framework (ai-security.md)
-                  → secure-pipeline-templates (AI agent controls in hardening checklist)
+├─ We are adopting AI coding assistants or deploying agentic pipelines
+│   └─ Start with: ai-devsecops-framework
+│       Then add: secure-ci-cd-reference-architecture (pipeline controls)
+│                 → software-supply-chain-security-framework (model supply chain)
+│                 → forensics-and-incident-response-framework (agent forensics)
+│
+├─ We had a security incident and need to investigate it
+│   └─ Start with: forensics-and-incident-response-framework
+│       Then add: secure-ci-cd-reference-architecture (pipeline-forensics-playbook)
+│                 → software-supply-chain-security-framework (supply-chain-forensics)
+│                 → cloud-security-devsecops (incident-response-playbooks)
+│
+└─ We want to understand what controls to apply before the next incident
+    └─ Start with: forensics-and-incident-response-framework (architecture.md — evidence infrastructure)
+        Then add: devsecops-maturity-model → devsecops-framework
 ```
 
 ---
@@ -120,25 +130,27 @@ What is your most urgent need?
 
 | Step | Framework | Focus |
 |------|-----------|-------|
-| 1 | `secure-ci-cd-reference-architecture` | Deploy AI-assisted development controls: slopsquatting detection, LLM input/output schema validation, AI pipeline agent authorization boundaries |
-| 2 | `software-supply-chain-security-framework` | Enable Model Bill of Materials (ML-SBOM), model provenance verification, and private model registry |
-| 3 | `devsecops-framework` | Apply AI security guidance for LLM applications: prompt injection, OWASP LLM Top 10, MCP server controls |
-| 4 | `secure-pipeline-templates` | Add AI agent pipeline controls to the hardening checklist; enforce new-dependency approval for AI-suggested packages |
-| 5 | `devsecops-maturity-model` | Assess AI security maturity; add AI/ML-specific KPIs to existing domain scoring |
-| 6 | `devsecops-methodology` | Extend anti-patterns training to cover AI anti-patterns (hallucinated dependencies, AI code review as sole gate, agents without authorization boundaries) |
+| 1 | `ai-devsecops-framework` | Establish the threat model for AI in your pipeline; inventory all AI integrations; deploy slopsquatting detection and agent authorization policy |
+| 2 | `secure-ci-cd-reference-architecture` | Extend pipeline controls to AI components: gate configuration, OIDC-scoped agent identity, AI pipeline audit integration |
+| 3 | `software-supply-chain-security-framework` | Model supply chain: ML-SBOM, model provenance verification, private model registry governance |
+| 4 | `forensics-and-incident-response-framework` | Agent forensics readiness: deploy immutable tool call logging before the first agentic incident |
+| 5 | `devsecops-maturity-model` | Add AI/ML-specific KPIs to domain scoring; AI security maturity is a ninth domain extension |
+| 6 | `devsecops-methodology` | Extend anti-patterns training to AI: hallucinated dependencies, AI-only security gates, agents without authorization boundaries |
 
 **Key integration touchpoints for AI-native development:**
 
 | AI Risk | Primary Framework | Specific Document |
 |---------|------------------|-------------------|
-| Hallucinated/slopsquatted packages | `secure-ci-cd-reference-architecture` | [ai-assisted-development.md](../../secure-ci-cd-reference-architecture/docs/ai-assisted-development.md) |
-| AI model supply chain compromise | `software-supply-chain-security-framework` | ML-1/ML-2/ML-3 controls in [framework.md](../../software-supply-chain-security-framework/docs/framework.md) |
-| AI model incident response | `software-supply-chain-security-framework` | [incident-response-playbook.md](../../software-supply-chain-security-framework/docs/incident-response-playbook.md) — Playbook 5 |
-| Agentic pipeline threats | `secure-ci-cd-reference-architecture` | [threat-model.md](../../secure-ci-cd-reference-architecture/docs/threat-model.md) — AI-Augmented Pipeline Threats |
-| LLM application security | `devsecops-framework` | [ai-security.md](../../devsecops-framework/docs/ai-security.md) |
-| AI anti-patterns | `devsecops-methodology` | [anti-patterns.md](../../devsecops-methodology/docs/anti-patterns.md) — AI/Agentic section |
+| Slopsquatting / hallucinated packages | `ai-devsecops-framework` | [framework.md](../../ai-devsecops-framework/docs/framework.md) — Section 1 |
+| Prompt injection in CI/CD pipeline | `ai-devsecops-framework` | [prompt-injection-defense.md](../../ai-devsecops-framework/docs/prompt-injection-defense.md) |
+| Agent authorization overreach | `ai-devsecops-framework` | [agent-authorization.md](../../ai-devsecops-framework/docs/agent-authorization.md) |
+| Agent audit trail and forensics | `forensics-and-incident-response-framework` | [agent-forensics.md](../../forensics-and-incident-response-framework/docs/agent-forensics.md) |
+| Model supply chain compromise | `software-supply-chain-security-framework` | ML-1/ML-2/ML-3 controls in [framework.md](../../software-supply-chain-security-framework/docs/framework.md) |
+| LLM application security (product features) | `ai-devsecops-framework` | [framework.md](../../ai-devsecops-framework/docs/framework.md) — Section 6 |
+| AI threat model (STRIDE for LLMs) | `ai-devsecops-framework` | [threat-model.md](../../ai-devsecops-framework/docs/threat-model.md) |
+| Pipeline AI controls per CI/CD platform | `ai-devsecops-framework` | [pipeline-controls.md](../../ai-devsecops-framework/docs/pipeline-controls.md) |
 
-**Milestone:** At 90 days, all AI-assisted development pipelines should have slopsquatting detection, new-dependency approval policies, and model hash verification for any production ML models. AI agent authorization must be enforced at the IAM layer, not solely at the prompt layer.
+**Milestone:** At 90 days, all AI-assisted development pipelines should have slopsquatting detection, new-dependency approval policies, and model hash verification for any production ML models. AI agent authorization must be enforced at the IAM layer, not solely at the prompt layer. Immutable tool call logging must be deployed before any agent has production deploy access.
 
 ---
 
@@ -176,6 +188,8 @@ Understanding where each framework begins and ends prevents duplication of effor
 | **devsecops-methodology** | Transformation program, change management, training | Technical architecture decisions |
 | **compliance-automation-framework** | Policy as Code, evidence collection, multi-framework mapping | Legal interpretation of regulatory requirements |
 | **cloud-security-devsecops** | Cloud-specific IAM, network, workload, container, Kubernetes security | Application-level security (covered by devsecops-framework) |
+| **forensics-and-incident-response-framework** | Evidence preservation, incident investigation procedures, chain of custody, agent forensics across pipeline/cloud/supply chain/AI domains | Proactive security controls (use the domain frameworks); legal defense strategy |
+| **ai-devsecops-framework** | AI security controls in the delivery pipeline: slopsquatting, prompt injection, agent authorization, model supply chain, agentic pipeline security | End-user-facing AI product security (OWASP LLM Top 10 covers that); AI model training |
 | **techstream-docs** | Framework index, integration scenarios, selection guidance | Individual framework depth |
 
 ---
@@ -191,6 +205,8 @@ Some frameworks require organizational readiness that may not exist yet. Forcing
 | `release-orchestration-framework` | Multiple deployment environments; more than one product team deploying independently |
 | `devsecops-maturity-model` | Engineering leadership willing to act on assessment findings |
 | `cloud-security-devsecops` | Cloud infrastructure already in use; IAM administrator access for control deployment |
+| `forensics-and-incident-response-framework` | CI/CD audit logging enabled; cloud audit logs (CloudTrail, GCP Audit Logs, Azure Monitor) active; at minimum one person with incident response responsibility identified |
+| `ai-devsecops-framework` | At least one AI tool actively integrated into the development workflow or CI/CD pipeline; an inventory of AI integrations in use |
 
 If prerequisites are missing, start with a lighter-weight framework and revisit once the foundational layer is in place.
 
