@@ -6,7 +6,7 @@
 
 ### Current State and Strategic Direction
 
-The Techstream Framework Suite has reached a point of strong foundational coverage: all nine core frameworks are established and actively maintained. The next phase of framework evolution focuses on three strategic themes:
+The Techstream Framework Suite has reached a point of strong foundational coverage: all ten core frameworks are established and actively maintained. The next phase of framework evolution focuses on three strategic themes:
 
 1. **Depth over breadth**: Maturing existing frameworks with more detailed implementation guidance, more tooling integrations, and better coverage of edge cases and advanced scenarios
 2. **Intelligence integration**: Incorporating AI/ML-assisted security capabilities as they mature into production-viable tooling
@@ -26,10 +26,12 @@ Artificial intelligence is changing the security landscape in two directions sim
 - Security controls for AI/ML systems themselves (model poisoning, prompt injection, training data security)
 - LLM security testing guidance for organizations deploying AI in applications
 
-**Planned Framework Updates**:
-- devsecops-framework: Add AI/ML security as a first-class domain
-- cloud-security-devsecops: Add controls for cloud AI/ML services (SageMaker, Azure AI, Vertex AI)
-- secure-ci-cd-reference-architecture: Add guidance for securing AI-assisted development pipelines
+**Delivered**:
+- devsecops-framework: [AI and LLM Security Integration](../../devsecops-framework/docs/ai-security.md) — controls for AI-assisted development, AI in pipelines, and AI-powered applications
+- secure-ci-cd-reference-architecture: [Securing AI-Assisted Development Pipelines](../../secure-ci-cd-reference-architecture/docs/ai-assisted-development.md) — hallucinated package detection, prompt injection defense, AI coding assistant policy
+
+**In Progress**:
+- cloud-security-devsecops: Controls for cloud AI/ML services (SageMaker, Azure AI, Vertex AI) — planned for next cycle
 
 ---
 
@@ -42,10 +44,12 @@ The platform engineering movement—building internal developer platforms (IDPs)
 - "Golden path" security: designing platform defaults to be secure by default
 - Platform-as-security-enabler patterns: how platforms can automatically provide secrets management, service identity, and deployment security to workloads
 
-**Planned Framework Updates**:
-- devsecops-framework: Add platform engineering and IDPs as a key organizational pattern
-- secure-pipeline-templates: Add platform-oriented templates that can be embedded in IDPs
-- cloud-security-devsecops: Add guidance for platform engineering on Kubernetes
+**Delivered**:
+- devsecops-framework: [Platform Engineering and IDP Security](../../devsecops-framework/docs/platform-engineering.md) — securing Internal Developer Platforms and golden path security
+
+**In Progress**:
+- secure-pipeline-templates: Platform-oriented templates for embedding in IDPs
+- cloud-security-devsecops: IDP patterns on Kubernetes
 
 ---
 
@@ -58,9 +62,8 @@ The convergence of CSPM (Cloud Security Posture Management), CWPP (Cloud Workloa
 - Integration patterns for CNAPP platforms (Wiz, Orca, Prisma Cloud, Microsoft Defender for Cloud)
 - Evaluation criteria for choosing between CNAPP platforms and best-of-breed point solutions
 
-**Planned Framework Updates**:
-- cloud-security-devsecops: Add CNAPP platform selection and integration guidance
-- compliance-automation-framework: Add CNAPP platforms as compliance evidence sources
+**Delivered**:
+- cloud-security-devsecops: [CNAPP Integration Guide](../../cloud-security-devsecops/docs/cnapp-integration.md) — platform selection criteria, integration architecture, and compliance evidence sourcing for Wiz, Orca, Prisma Cloud, and Defender for Cloud
 
 ---
 
@@ -73,9 +76,8 @@ eBPF (Extended Berkeley Packet Filter) technology is enabling a new generation o
 - Network policy enforcement through eBPF (Cilium) vs. iptables-based approaches
 - eBPF security observability as a replacement for multiple point tools
 
-**Planned Framework Updates**:
-- cloud-security-devsecops: Add eBPF security tooling guidance (Tetragon, Cilium)
-- devsecops-framework: Add eBPF as a key enabling technology for DevSecOps observability
+**Delivered**:
+- cloud-security-devsecops: [eBPF Security Tooling Guide](../../cloud-security-devsecops/docs/ebpf-security.md) — Cilium, Tetragon, and Falco eBPF configuration with GitOps integration and compliance evidence mapping
 
 ---
 
@@ -112,7 +114,7 @@ Techstream is building a more structured community contribution program that wil
 - Participate in framework working groups that develop new content areas
 - Contribute translations of framework content into non-English languages
 
-The community contribution program is expected to launch in Q2 2025, with initial working groups focused on GCP-specific guidance, GitLab CI template coverage, and non-English documentation.
+The community contribution program is accepting contributors now, with initial working groups focused on GCP-specific guidance, GitLab CI template coverage, and non-English documentation. Working group participation is coordinated through GitHub Discussions in the relevant framework repositories.
 
 ---
 
@@ -204,7 +206,13 @@ Techstream's long-term vision for its role in the DevSecOps industry extends bey
 
 **CSPM (Cloud Security Posture Management)**: Tools that continuously assess cloud resource configurations against security best practices and compliance standards. Examples: Prowler, Wiz, AWS Security Hub, Microsoft Defender for Cloud.
 
+**CVE (Common Vulnerabilities and Exposures)**: A publicly disclosed identifier for a known security vulnerability. Managed by MITRE and the NVD, each CVE has a unique identifier (e.g., CVE-2021-44228 for Log4Shell).
+
+**CVSS (Common Vulnerability Scoring System)**: A standardized scoring framework for assessing the severity of vulnerabilities, producing scores from 0.0 to 10.0. CVSS v3.1 and v4.0 are current versions. Scores inform vulnerability prioritization but should not be used as the sole triage criterion.
+
 **CWPP (Cloud Workload Protection Platform)**: Security tools that protect running workloads (VMs, containers, serverless) from threats at the compute layer.
+
+**CycloneDX**: An SBOM standard maintained by OWASP. Designed for security use cases including vulnerability tracking, license compliance, and VEX assertions. One of two primary SBOM formats alongside SPDX.
 
 ### D
 
@@ -218,6 +226,8 @@ Techstream's long-term vision for its role in the DevSecOps industry extends bey
 
 **DMARC**: Domain-based Message Authentication, Reporting, and Conformance. An email authentication protocol that protects against domain spoofing.
 
+**DORA Metrics**: Four key metrics identified by DevOps Research and Assessment (DORA) research to measure software delivery performance: deployment frequency, lead time for changes, change failure rate, and mean time to recover. DevSecOps programs should track how security integration affects DORA metrics—well-integrated security should improve, not degrade, delivery performance.
+
 **Dynamic Secrets**: Credentials that are generated on-demand and expire automatically after a defined time period, eliminating the risk associated with long-lived static credentials.
 
 ### E
@@ -227,6 +237,8 @@ Techstream's long-term vision for its role in the DevSecOps industry extends bey
 **EDR (Endpoint Detection and Response)**: Security software that monitors endpoint behavior for malicious activity and provides response capabilities.
 
 **Egress Control**: Network controls that restrict outbound connections from a network or workload. Egress controls limit data exfiltration and command-and-control communication.
+
+**EPSS (Exploit Prediction Scoring System)**: A probabilistic model that estimates the likelihood that a CVE will be exploited in the wild within 30 days. Published by FIRST, EPSS complements CVSS severity scores with exploitation probability data, enabling more accurate prioritization of vulnerability remediation.
 
 ### F
 
@@ -252,6 +264,8 @@ Techstream's long-term vision for its role in the DevSecOps industry extends bey
 
 **HIPAA (Health Insurance Portability and Accountability Act)**: US regulation governing the privacy and security of protected health information (PHI).
 
+**Hermetic Build**: A build process that produces identical output given identical inputs by isolating the build environment from the network and external state. Hermetic builds are a prerequisite for reproducible builds and a key SLSA requirement, as they prevent dependency tampering during the build phase.
+
 **HSM (Hardware Security Module)**: A dedicated hardware device for cryptographic key storage and operations, providing higher security assurance than software key storage.
 
 **Hub-and-Spoke**: A cloud network topology where a central hub network is connected to multiple spoke networks. Traffic between spokes passes through the hub, enabling centralized security inspection and control.
@@ -265,6 +279,8 @@ Techstream's long-term vision for its role in the DevSecOps industry extends bey
 **IMDS (Instance Metadata Service)**: A service available to cloud compute instances that provides metadata about the instance, including temporary credentials. A common target for SSRF-based credential theft.
 
 **Immutable Infrastructure**: Infrastructure that is replaced rather than modified when changes are needed, preventing configuration drift and enabling consistent, reproducible deployments.
+
+**in-toto**: A framework for securing supply chain software by cryptographically linking every step in the build pipeline to verifiable metadata. Enables end-to-end verification that software was built according to a defined supply chain layout, from source checkout through artifact publication.
 
 **IOC (Indicators of Compromise)**: Evidence that a security incident may have occurred, such as unusual network traffic, unexpected process execution, or unauthorized file modifications.
 
@@ -312,13 +328,19 @@ Techstream's long-term vision for its role in the DevSecOps industry extends bey
 
 **NetworkPolicy**: A Kubernetes resource that specifies how pods are allowed to communicate with each other and with other network endpoints. Requires a CNI plugin that supports network policies.
 
+**NIS 2 Directive**: The EU Network and Information Security Directive 2022/2555, which substantially expands the scope of the original NIS Directive to cover more sectors and imposes stricter cybersecurity requirements on operators of essential and important services across EU member states.
+
 **NIST (National Institute of Standards and Technology)**: US government agency that publishes widely used security standards and frameworks including NIST SP 800-53, NIST Cybersecurity Framework, and NIST SSDF.
 
 ### O
 
+**OCI (Open Container Initiative)**: An open governance project that maintains open standards for container runtimes and image formats. OCI image format is the foundation for container images used by Docker, Kubernetes, and all major container runtimes.
+
 **OIDC (OpenID Connect)**: An identity layer built on top of OAuth 2.0 that enables authentication. Used for cloud workload identity, SSO, and cross-service authentication.
 
 **OPA (Open Policy Agent)**: A general-purpose, open-source policy engine that enables unified policy enforcement across the stack. Used with Kubernetes (Gatekeeper), CI/CD pipelines, and API gateways.
+
+**OpenSSF (Open Source Security Foundation)**: A cross-industry initiative founded in 2020 to improve the security of open-source software. Publishes the OpenSSF Scorecard (a tool for assessing open-source project security), the SLSA framework, and the Sigstore project.
 
 **OWASP (Open Web Application Security Project)**: A nonprofit foundation that produces freely available articles, methodologies, documentation, tools, and technologies in the field of web application security.
 
@@ -332,7 +354,11 @@ Techstream's long-term vision for its role in the DevSecOps industry extends bey
 
 **Pod Security Standards (PSS)**: Kubernetes-native security profiles that define acceptable security configurations for pods: Privileged (unrestricted), Baseline (minimally restrictive), and Restricted (strongly restrictive).
 
+**PASTA (Process for Attack Simulation and Threat Analysis)**: A risk-centric threat modeling methodology that aligns technical threat analysis with business objectives. Unlike STRIDE (which focuses on attack categories), PASTA produces business risk scores by simulating attack paths from an attacker's perspective.
+
 **Policy-as-Code**: The practice of expressing security and compliance policies in machine-readable code that can be version-controlled, automatically evaluated, and enforced through policy engines.
+
+**Provenance**: Verifiable metadata that records the origin and history of a software artifact—specifically, how it was built, from what source, using what build process, and by which identity. Provenance is a core concept in SLSA and in-toto frameworks.
 
 **Prowler**: An open-source multi-cloud security assessment tool that checks cloud environments against CIS benchmarks, NIST, PCI DSS, ISO 27001, and other security frameworks.
 
@@ -362,7 +388,13 @@ Techstream's long-term vision for its role in the DevSecOps industry extends bey
 
 **Shift Left**: The DevSecOps practice of moving security activities earlier in the development lifecycle to identify and remediate issues when they are cheapest to fix.
 
-**SIEM (Security Information and Event Management)**: A system that collects, correlates, and analyzes security event logs from across an environment to identify threats and support incident investigation.
+**SIEM (Security Information and Event Management)**
+
+**SPDX (Software Package Data Exchange)**: An ISO standard (ISO 5962) SBOM format developed by the Linux Foundation. Widely used in open-source projects and increasingly required by US federal agency procurement. One of two primary SBOM formats alongside CycloneDX.
+
+**SSDF (Secure Software Development Framework)**: NIST Special Publication 800-218. A set of fundamental secure software development practices for producers of software. Referenced by US Executive Order 14028 as the basis for federal software security requirements.
+
+**STRIDE**: A threat modeling methodology developed at Microsoft that categorizes threats into six types: Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, and Elevation of Privilege. Widely used in DevSecOps for pipeline threat analysis and system design reviews.: A system that collects, correlates, and analyzes security event logs from across an environment to identify threats and support incident investigation.
 
 **Sigstore**: An open-source project providing free code signing infrastructure for open-source software. Includes Cosign (artifact signing), Fulcio (certificate authority), and Rekor (transparency log).
 
@@ -392,6 +424,8 @@ Techstream's long-term vision for its role in the DevSecOps industry extends bey
 
 **Vault (HashiCorp Vault)**: An open-source secrets management tool that provides secure storage, dynamic secrets generation, key management, and identity-based access.
 
+**VEX (Vulnerability Exploitability eXchange)**: A document format, often embedded in or attached to an SBOM, that communicates whether a known vulnerability in a component actually affects a specific software product. VEX allows software producers to assert that despite containing a vulnerable library, their product is not exploitable due to non-invocation of the affected code path or compensating controls.
+
 ### W
 
 **WAF (Web Application Firewall)**: A security appliance or service that monitors, filters, and blocks HTTP traffic to and from web applications, protecting against common web exploits.
@@ -410,6 +444,23 @@ Techstream's long-term vision for its role in the DevSecOps industry extends bey
 
 The following index lists all documents across all Techstream framework repositories with descriptions.
 
+### Framework Content Status
+
+The following table tracks the content completeness status and CONTRIBUTING.md availability across the suite, enabling community contributors to identify where contributions will have the highest impact.
+
+| Repository | Docs Complete | CONTRIBUTING.md | Notable Gaps / Improvement Areas |
+|---|---|---|---|
+| techstream-docs | ✓ | ✓ | Integration scenarios guide added; continue expanding cross-framework examples |
+| devsecops-framework | ✓ | ✓ | Three-pillar diagrams added; toolchain layer diagrams added |
+| secure-ci-cd-reference-architecture | ✓ | ✓ | CircleCI, Azure DevOps coverage could expand |
+| release-orchestration-framework | ✓ | ✓ | GitOps, K8s, multi-cloud patterns added to best-practices |
+| software-supply-chain-security-framework | ✓ | ✓ | SBOM attestation, VEX, runtime monitoring sections added |
+| devsecops-maturity-model | ✓ | ✓ | Mermaid domain matrix diagrams added; quick-start guide added |
+| compliance-automation-framework | ✓ | ✓ | DORA, NIS2, CMMC mapping coverage could expand |
+| secure-pipeline-templates | ✓ | ✓ | Azure DevOps, CircleCI, Tekton templates missing |
+| devsecops-methodology | ✓ | ✓ | Anti-patterns section added; champion lifecycle section added |
+| cloud-security-devsecops | ✓ | ✓ | AI/ML security, eBPF, CNAPP roadmap sections added |
+
 ### techstream-docs (This Repository)
 
 | Document | Path | Description |
@@ -417,10 +468,12 @@ The following index lists all documents across all Techstream framework reposito
 | Portal README | `README.md` | Entry point for all Techstream documentation; framework index and navigation guide |
 | Introduction | `docs/introduction.md` | About Techstream, mission, vision, values, philosophy |
 | Architecture | `docs/architecture.md` | Framework ecosystem map, integration patterns, reference architecture |
-| Framework Portfolio | `docs/framework.md` | Complete guide to all nine frameworks |
+| Framework Portfolio | `docs/framework.md` | Complete guide to all ten frameworks |
 | Implementation | `docs/implementation.md` | Adoption guidance, organizational profiles, professional services |
 | Best Practices | `docs/best-practices.md` | Meta best practices for framework adoption and governance |
+| Integration Scenarios | `docs/integration-scenarios.md` | End-to-end cross-framework integration scenarios for common use cases |
 | Roadmap & Glossary | `docs/roadmap.md` | Future roadmap, industry trends, glossary, documentation index (this document) |
+| Contributing | `CONTRIBUTING.md` | Contribution guidelines for the documentation portal |
 
 ---
 
@@ -430,11 +483,12 @@ The following index lists all documents across all Techstream framework reposito
 |---|---|---|
 | README | `README.md` | Framework overview, scope, quick start |
 | Introduction | `docs/introduction.md` | DevSecOps definition, history, and industry context |
-| Architecture | `docs/architecture.md` | Organizational architecture for DevSecOps teams |
+| Architecture | `docs/architecture.md` | Organizational architecture for DevSecOps teams; includes three-pillar, layered toolchain, and vulnerability management diagrams |
 | Framework | `docs/framework.md` | Core DevSecOps principles and practices |
 | Implementation | `docs/implementation.md` | Implementation guidance for the core framework |
 | Best Practices | `docs/best-practices.md` | DevSecOps best practices |
 | Roadmap | `docs/roadmap.md` | Maturity roadmap and KPIs |
+| Contributing | `CONTRIBUTING.md` | Contribution guidelines |
 
 ---
 
@@ -546,4 +600,30 @@ The following index lists all documents across all Techstream framework reposito
 | Framework | `docs/framework.md` | Cloud security controls framework by domain |
 | Implementation | `docs/implementation.md` | Implementation phases, hardening playbooks, incident response |
 | Best Practices | `docs/best-practices.md` | 35+ cloud security best practices by domain |
-| Roadmap | `docs/roadmap.md` | Cloud security maturity roadmap, KPIs, investment planning |
+| Roadmap | `docs/roadmap.md` | Cloud security maturity roadmap, KPIs, investment planning; includes AI/ML security, eBPF, and CNAPP adoption milestones |
+| Contributing | `CONTRIBUTING.md` | Contribution guidelines |
+
+---
+
+### Roadmap for New Framework Additions
+
+The following criteria govern when a new framework repository is added to the Techstream suite:
+
+**Addition Criteria**
+
+1. **Distinct domain scope**: The new framework must cover a DevSecOps, cloud security, or secure software delivery domain not already covered by an existing framework. Significant overlap with existing frameworks disqualifies addition.
+2. **Sufficient depth**: New frameworks must provide enough content depth to justify a standalone repository — typically 6 documentation files and 2,000+ lines of substantive guidance.
+3. **Cross-framework integration points**: The new framework must have at least 2 defined integration points with existing frameworks, documented in both the new framework and in techstream-docs/docs/architecture.md.
+4. **Community validation**: Proposed new frameworks should be discussed in GitHub Discussions with community input before development begins.
+5. **Maintenance commitment**: The core team must commit to ongoing maintenance before a new framework is published.
+
+**Frameworks Under Consideration**
+
+The following areas are being evaluated as candidates for future framework additions:
+
+| Candidate Area | Rationale | Status |
+|---|---|---|
+| AI/ML Security Framework | Growing demand; current coverage spread across cloud-security-devsecops and devsecops-framework | Under evaluation |
+| Platform Engineering Security | Internal Developer Platforms (IDPs) are a significant emerging architecture pattern | Under evaluation |
+| API Security Framework | API attack surface is growing; current coverage is limited to references within existing frameworks | Under evaluation |
+| Container & Kubernetes Security (dedicated) | Current K8s coverage in cloud-security-devsecops could be expanded to a standalone framework | Under evaluation |
