@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="https://techstream.app">
+    <img src="https://techstream.app/images/techstream-icon.svg" width="72" height="72" alt="TechStream" />
+  </a>
+</p>
+
 # Techstream Official Documentation Portal
 
 > The central reference for Techstream's DevSecOps frameworks, methodologies, and implementation guidance.
