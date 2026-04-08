@@ -17,6 +17,7 @@ These scenarios bridge the gap between individual framework documentation and th
 - [Scenario 5: Kubernetes Platform Security Hardening](#scenario-5-kubernetes-platform-security-hardening)
 - [Scenario 6: Multi-Cloud Compliance Automation for a Financial Services Organization](#scenario-6-multi-cloud-compliance-automation-for-a-financial-services-organization)
 - [Scenario 7: Internal Developer Platform Security Baseline](#scenario-7-internal-developer-platform-security-baseline)
+- [Scenario 8: Securing an AI-Assisted DevSecOps Pipeline End-to-End](#scenario-8-securing-an-ai-assisted-devsecops-pipeline-end-to-end)
 - [Framework Touchpoint Reference](#framework-touchpoint-reference)
 
 ---
@@ -822,6 +823,160 @@ By month 12, all 15 product teams are using the IDP golden path. Security contro
 
 ---
 
+## Scenario 8: Securing an AI-Assisted DevSecOps Pipeline End-to-End
+
+### Situation
+
+A 200-person engineering organization has deployed AI across three layers of its software delivery pipeline: an AI coding assistant integrated with developer IDEs, an AI-powered code review agent that comments on every pull request, and an autonomous remediation agent that generates and submits fixes for vulnerability scanner findings. The security team has been asked to establish controls for all three layers, define what a security incident involving an AI agent looks like, and ensure the organization can investigate one if it occurs. There is no existing AI security policy.
+
+### Frameworks Involved
+
+- **ai-devsecops-framework** — primary framework for AI pipeline security controls
+- **forensics-and-incident-response-framework** — agent forensics and incident response
+- **secure-ci-cd-reference-architecture** — underlying CI/CD security architecture (AI agents operate within it)
+- **secure-pipeline-templates** — pipeline-level controls for AI pipeline steps
+- **software-supply-chain-security-framework** — model supply chain (AI model as a supply chain artifact)
+- **devsecops-maturity-model** — AI security maturity assessment (Chapter 18, five-level AI Security Maturity scale)
+
+### Integration Flow
+
+```
+ai-devsecops-framework
+(AI security architecture — primary)
+        │
+        ├──► secure-ci-cd-reference-architecture
+        │    (AI agents operate as steps in the CI/CD pipeline;
+        │     trust boundaries, OIDC auth, and audit logging apply)
+        │           │
+        │           └──► secure-pipeline-templates
+        │                (circuit breaker and approval gate patterns
+        │                 for AI-integrated pipeline steps)
+        │
+        ├──► software-supply-chain-security-framework
+        │    (AI models are supply chain artifacts;
+        │     apply SBOM, signing, and provenance to model artifacts)
+        │
+        ├──► forensics-and-incident-response-framework
+        │    (agent forensics — Five Questions Framework, playbooks AF-01–AF-06;
+        │     forensic readiness program; agent behavioral baseline)
+        │
+        └──► devsecops-maturity-model
+             (AI Security Maturity assessment — five levels;
+              gap-to-roadmap mapping; board-level reporting)
+```
+
+### Phase 1: Establish Minimum Viable AI Security Program (Days 1–90)
+
+**Objective:** Implement the six MVASP components to achieve AI Security Maturity Level 2 (AI-Aware).
+
+**Week 1–2: Inventory and Policy**
+
+1. **AI component inventory** — Enumerate all AI integrations: IDE plugins (Copilot, Cursor, etc.), the PR review agent (identify which model, which integration, what it can do), the remediation agent (what repository access it has, how it submits PRs).
+   - Reference: `ai-devsecops-framework/docs/introduction.md` — integration surface taxonomy
+
+2. **Developer AI usage policy** — Define what data can be sent to AI coding assistants (exclude secrets, internal API specs, PII), which assistants are approved, and the process for requesting new tools.
+   - Reference: `ai-devsecops-framework/docs/developer-environment-controls.md`
+
+**Week 3–4: Detection Controls**
+
+3. **Prompt injection detection for the PR review agent** — The PR review agent reads untrusted content (PR descriptions, commit messages, code comments). Apply:
+   - Input sanitization: strip content that matches instruction-override patterns before feeding to the model
+   - Output schema validation: enforce that the agent's output is a structured finding list, not free-text that may contain injection-influenced content
+   - Canary tokens: embed a unique string in the system prompt; alert if the canary appears in agent output
+   - Reference: `ai-devsecops-framework/docs/prompt-injection-defense.md`
+
+**Week 5–6: Authorization Controls**
+
+4. **Tool authorization policy for the remediation agent** — The remediation agent currently has implicit repository write access. Replace with an explicit authorization policy implementing POLA:
+   - Permitted: read repository, create branch, create PR (draft only)
+   - Prohibited: merge PR, push to main, access secrets store, invoke external webhooks
+   - Session-scoped credentials: generate a short-lived GitHub App installation token per remediation session (15-minute TTL), not a persistent service account token
+   - Reference: `ai-devsecops-framework/docs/agent-authorization.md`
+
+5. **Human approval gate** — All PRs created by the remediation agent require human review and explicit approval before merge. Configure GitHub environment protection rules to enforce this.
+   - Reference: `secure-pipeline-templates/docs/github-actions-advanced-patterns.md` — Environment Protection Rules section
+
+**Week 7–8: Audit Trail and IR Readiness**
+
+5. **Minimum viable agent audit trail** — Instrument the PR review and remediation agents to emit structured audit records for every tool invocation:
+   - Required fields: agent identity, session ID, session start timestamp, tool name, input parameter hash, output hash, authorization context, human principal
+   - Store in append-only log (cloud storage with object lock, or equivalent)
+   - Reference: `ai-devsecops-framework/docs/agent-audit-trail.md`
+
+6. **Agent incident response runbook** — Adapt the Five Forensic Questions Framework into a runbook that answers: what did the agent do, what was it instructed to do, what data did it access, what tools did it invoke, was each action authorized?
+   - Reference: `forensics-and-incident-response-framework/docs/agent-forensics/five-questions-framework.md`
+
+### Phase 2: Systematic Controls (Months 3–6)
+
+**Objective:** Advance to AI Security Maturity Level 3 (AI-Defended) with systematic controls on all three pipeline layers.
+
+**AI Coding Assistant Layer**
+- Deploy pre-commit hook that verifies package names against the npm/PyPI/Cargo registry before commit, blocking slopsquatted dependencies introduced by AI code suggestions
+- Reference: `ai-devsecops-framework/docs/developer-environment-controls.md` — slopsquatting detection section
+
+**PR Review Agent Layer**
+- Apply STRIDE threat model to the PR review agent's data flow to identify remaining attack vectors beyond prompt injection
+- Configure circuit breaker: if the agent's PR comment volume exceeds 3x baseline in a 10-minute window, suspend the agent session and alert
+- Reference: `ai-devsecops-framework/docs/threat-model.md`, `secure-pipeline-templates/docs/hardening-checklist.md`
+
+**Remediation Agent Layer**
+- Add blast radius limits: maximum 3 PRs per remediation session, maximum 1 session concurrent, maximum 20 file modifications per PR
+- Add reversibility requirement: remediation agent may only create draft PRs, never push directly to any branch other than a dedicated `ai-remediation/*` namespace
+- Reference: `ai-devsecops-framework/docs/blast-radius-containment.md`
+
+**Model Supply Chain**
+- Treat the AI model as a supply chain artifact: pin the model version identifier (model name + version/date), verify the model is from an approved provider, scan model weights for known vulnerabilities if the model is self-hosted
+- If using a third-party model API: verify the provider's SOC 2 / ISO 27001 attestation; review the API's data retention and training data policies
+- Reference: `ai-devsecops-framework/docs/model-supply-chain.md`, `software-supply-chain-security-framework/docs/vendor-security-assessment.md`
+
+### Phase 3: Forensic Readiness and Governance (Months 6–12)
+
+**Objective:** Reach AI Security Maturity Level 4 (AI-Governed) — agent authorization policies, audit trails, and forensic readiness established before the next AI component expansion.
+
+**Forensic Readiness Assessment**
+- Run the Five Forensic Questions as an audit readiness checklist for each deployed agent: if a hypothetical agent incident occurred today, could you answer all five questions?
+- Expected gap: Q2 (what was the agent instructed to do?) requires system prompt version control, which is often not in place at first deployment
+- Reference: `forensics-and-incident-response-framework/docs/agent-forensics/readiness-guide.md`
+
+**Behavioral Baseline Establishment**
+- Instrument the PR review and remediation agents for six baseline dimensions: tool call frequency, resource consumption, session duration distribution, network egress volume, authorization pattern distribution, output schema conformance rate
+- Collect 30-day baseline before enabling anomaly alerting
+- Reference: `forensics-and-incident-response-framework/docs/ai-behavioral-baseline.md`
+
+**Tabletop Exercise**
+- Run a 2-hour tabletop exercise using the unauthorized tool call (AF-01) playbook scenario: a simulated prompt injection in a PR description causes the remediation agent to attempt to read a secrets file outside its authorized scope. Walk through each step of the investigation using your actual audit logs.
+- Identify evidence gaps and create a remediation roadmap
+- Reference: `forensics-and-incident-response-framework/docs/agent-forensics.md` — playbook AF-01
+
+**AI Security Maturity Assessment**
+- Complete a formal assessment against the five-level AI Security Maturity Model
+- Map gaps to controls from `ai-devsecops-framework` and `forensics-and-incident-response-framework`
+- Produce board-level AI security roadmap with investment justification
+- Reference: `ai-devsecops-framework/docs/maturity-model.md`, `devsecops-maturity-model/docs/assessment-scorecard.md`
+
+### Integration Touchpoints: Control-to-Framework Mapping
+
+| AI Security Control | Primary Framework Document | Secondary Reference |
+|---|---|---|
+| AI component inventory | `ai-devsecops-framework/docs/introduction.md` | `techstream-docs/docs/framework-selection-guide.md` |
+| Developer AI usage policy | `ai-devsecops-framework/docs/developer-environment-controls.md` | — |
+| Prompt injection defense | `ai-devsecops-framework/docs/prompt-injection-defense.md` | `secure-pipeline-templates/docs/hardening-checklist.md` |
+| Agent authorization policy | `ai-devsecops-framework/docs/agent-authorization.md` | `secure-ci-cd-reference-architecture/docs/implementation.md` |
+| Human approval gates | `secure-pipeline-templates/docs/github-actions-advanced-patterns.md` | `ai-devsecops-framework/docs/pipeline-controls.md` |
+| Agent audit trail | `ai-devsecops-framework/docs/agent-audit-trail.md` | `forensics-and-incident-response-framework/docs/evidence-chain-of-custody.md` |
+| Blast radius containment | `ai-devsecops-framework/docs/blast-radius-containment.md` | `ai-devsecops-framework/docs/production-operations.md` |
+| Circuit breakers | `ai-devsecops-framework/docs/pipeline-controls.md` | `secure-pipeline-templates/docs/hardening-checklist.md` |
+| Model supply chain | `ai-devsecops-framework/docs/model-supply-chain.md` | `software-supply-chain-security-framework/docs/vendor-security-assessment.md` |
+| Agent forensics (IR) | `forensics-and-incident-response-framework/docs/agent-forensics.md` | `forensics-and-incident-response-framework/docs/agent-forensics/five-questions-framework.md` |
+| Behavioral baseline | `forensics-and-incident-response-framework/docs/ai-behavioral-baseline.md` | — |
+| AI security maturity | `ai-devsecops-framework/docs/maturity-model.md` | `devsecops-maturity-model/docs/assessment-scorecard.md` |
+
+### Outcome
+
+By month 12, the organization has implemented systematic security controls across all three AI pipeline layers, established a forensic readiness program that can answer the Five Forensic Questions for any agent incident, and assessed its AI security maturity at Level 3–4 with a funded roadmap to Level 5. Agent authorization policies are version-controlled, audit trails are operational and regularly tested, and the tabletop exercise has revealed and remediated the highest-priority forensic infrastructure gaps. The security team can demonstrate to auditors and regulators that AI components in the delivery pipeline are governed with the same rigor as traditional pipeline components.
+
+---
+
 ## Framework Touchpoint Reference
 
 The following table provides a quick reference for which frameworks integrate at each major touchpoint in the DevSecOps lifecycle.
@@ -838,3 +993,6 @@ The following table provides a quick reference for which frameworks integrate at
 | Release governance | release-orchestration-framework | compliance-automation-framework, cloud-security-devsecops, secure-ci-cd-reference-architecture |
 | Compliance automation | compliance-automation-framework | All frameworks (evidence consumers) |
 | Internal Developer Platform | devsecops-framework (platform-engineering) | secure-pipeline-templates, software-supply-chain-security-framework, release-orchestration-framework, compliance-automation-framework |
+| AI pipeline security | ai-devsecops-framework | secure-ci-cd-reference-architecture, secure-pipeline-templates, software-supply-chain-security-framework, forensics-and-incident-response-framework |
+| Agent forensics & AI incident response | forensics-and-incident-response-framework | ai-devsecops-framework, compliance-automation-framework |
+| AI security maturity | ai-devsecops-framework (maturity-model.md) | devsecops-maturity-model, forensics-and-incident-response-framework |

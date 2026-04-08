@@ -60,7 +60,7 @@ The Techstream ecosystem is organized into four layers. Understanding which laye
 |-------|----------|---------|----------|
 | **Layer 1 — Framework Repos** | This repository + 9 others | Enterprise reference documentation, architecture guidance, and technical depth | Engineering teams, architects, security engineers |
 | **Layer 2 — Learning Companion** | [techstream-learn/](../techstream-learn/) | Hands-on labs and exercises — simplified, executable, < 60 min each | Practitioners learning the frameworks |
-| **Layer 3 — Book Manuscripts** | [techstream-books/](../techstream-books/) | Four-volume book series: extended technical narrative with case studies | Readers of the Techstream book series |
+| **Layer 3 — Book Manuscripts** | [techstream-books/](../techstream-books/) | Five-volume book series: extended technical narrative with case studies | Readers of the Techstream book series |
 | **Layer 4 — Enterprise Templates** | [techstream-enterprise/](../techstream-enterprise/) | Production-ready pipeline templates, compliance packs, IaC baselines | Teams in regulated or enterprise environments |
 
 **Layer boundaries matter:**
@@ -265,8 +265,9 @@ The Techstream Book Series and hands-on lab companion provide a structured learn
 - **[Book 2: Securing CI/CD & the Software Supply Chain](https://www.techstream.app/learn)** — Covers pipeline security, SLSA, SBOM, OIDC authentication, and software supply chain integrity.
 - **[Book 3: Cloud-Native Security for DevSecOps](https://www.techstream.app/learn)** — Covers cloud security posture management, zero trust, CNAPP, and compliance automation.
 - **[Book 4: Release Engineering & DevSecOps Governance](https://www.techstream.app/learn)** — Covers GitOps, progressive delivery, release governance, and DORA metrics.
-- **[Hands-On Labs (techstream-learn/)](https://www.techstream.app/learn)** — Practical lab exercises for all four volumes.
-- **[Book Series Overview (VOLUMES.md)](../techstream-books/VOLUMES.md)** — Complete index and metadata for all four Techstream book volumes.
+- **[Book 5: AI and Agentic Systems Security for DevSecOps](https://www.techstream.app/learn)** — Covers AI threat modeling, prompt injection defense, agentic pipeline security, agent forensics, and the AI security maturity model. Companion to ai-devsecops-framework and forensics-and-incident-response-framework.
+- **[Hands-On Labs (techstream-learn/)](https://www.techstream.app/learn)** — Practical lab exercises for all five volumes.
+- **[Book Series Overview (VOLUMES.md)](../techstream-books/VOLUMES.md)** — Complete index and metadata for all five Techstream book volumes.
 - **[Techstream Platform](https://www.techstream.app)** — The central portal for all Techstream frameworks, documentation, and learning resources.
 
 ---

@@ -180,6 +180,27 @@ Security controls applied at the point where a machine learning model processes 
 **AI Agent Authorization Boundary**
 The set of explicitly defined constraints on what an AI agent can do: which tools it can invoke, which environments it can access, which resources it can modify, and under what conditions human approval is required. Authorization boundaries must be enforced at the IAM/infrastructure layer — not solely through prompt-level instructions that the model might ignore or that an adversary might override through prompt injection.
 
+**POLA (Principle of Least Authority)**
+Applied to AI agents: the requirement that each agent receive only the permissions necessary to complete the specific task it has been delegated, not the category of tasks it could theoretically perform. POLA for agents extends classical least privilege (which limits what an identity can do) to also limit the scope of the agent's instructions and the authority it may delegate to downstream subagents. Contrast with RBAC-only models that grant broad roles to pipeline service accounts.
+
+**Context Window Poisoning**
+An attack in which adversarial content injected into an AI agent's context window (via any data source the agent processes — files, API responses, logs, code comments) causes the agent to interpret or act on attacker-controlled instructions. Context window poisoning is the mechanism by which indirect prompt injection operates at scale: the attacker does not have direct access to the agent's system prompt but controls data that the agent ingests during a task.
+
+**Cascade Compromise**
+A class of multi-agent attack in which a compromised or prompt-injected subagent exploits insufficient trust boundaries between agent tiers to escalate its effective authority. If the orchestrator passes a subagent's output directly to a higher-privilege operation without validation, a compromised subagent can cause the orchestrator to perform actions beyond the subagent's intended authority. Mitigation: treat all inter-agent communication as untrusted; validate subagent outputs with deterministic checks before acting on them.
+
+**Agent Forensics**
+The investigation discipline for determining what an AI agent did during an incident, whether its actions were within its authorized scope, what instructions it was operating under, what data it accessed, and what downstream effects resulted. Agent forensics requires pre-incident instrumentation — prompt logs, tool call logs, input/output hashes, and session audit trails — that standard pipeline logging does not capture by default. See: [forensics-and-incident-response-framework: agent-forensics.md](../../forensics-and-incident-response-framework/docs/agent-forensics.md).
+
+**Five Forensic Questions**
+A structured investigation framework for AI agent incidents, providing five questions that determine the scope and nature of a compromise: (Q1) What actions did the agent take? (Q2) What instructions was the agent operating under at the time? (Q3) What data did the agent access or process? (Q4) What tools did the agent invoke and with what parameters? (Q5) What was the authorization basis for each action? The framework is defined in the forensics-and-incident-response-framework and applied in book-5 chapters 14–17.
+
+**Forensics Readiness Score**
+A five-level maturity scale (FRS 1–5) measuring an organization's capability to conduct AI agent forensic investigations. FRS 1: no agent-specific logging; FRS 3: structured audit trail with session replay; FRS 5: pre-built investigation playbooks, legal hold capability, and < 4-hour evidence collection SLA. Defined in: [forensics-and-incident-response-framework: implementation.md](../../forensics-and-incident-response-framework/docs/implementation.md).
+
+**MVASP (Minimum Viable AI Security Program)**
+The smallest set of AI security controls that provides meaningful risk reduction for an organization beginning to adopt AI-assisted development or agentic pipelines. An MVASP typically includes: SCA for AI-generated code, secrets scanning with AI-aware rules, a tool access manifest for any agentic components, basic prompt logging, and an AI security incident response playbook. The MVASP is a starting point, not an endpoint — it is designed to be achievable in 90 days and built upon progressively.
+
 ---
 
 ## Secrets and Credentials

@@ -150,6 +150,59 @@ curl -s \
 # 3. Alert all teams using the package
 ```
 
+**AI/Agent Systems (AI DevSecOps Framework + Forensics and IR Framework):**
+
+```bash
+# CRITICAL: Capture agent context window and logs BEFORE any remediation
+# This evidence is volatile — once the pod is terminated it is lost
+kubectl logs -n ai-pipeline \
+  --selector app=ai-agent \
+  --previous --timestamps \
+  > /evidence/agent-session-$(date +%s).log
+
+# Capture running pod state (environment, mounts, resource limits)
+kubectl get pod -n ai-pipeline -o json \
+  --selector app=ai-agent \
+  > /evidence/agent-pod-state-$(date +%s).json
+
+# Revoke the agent's tool authorization policy immediately
+# If using YAML-defined tool scope, apply a deny-all override:
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agent-tool-policy
+  namespace: ai-pipeline
+data:
+  policy.yaml: |
+    tools: []
+    allow_filesystem: false
+    allow_network: false
+    allow_shell: false
+    reason: emergency-lockdown-$(date +%Y%m%d)
+EOF
+
+# If the agent operates via GitHub Actions — disable the workflow
+gh api \
+  -X PUT /repos/ORG/REPO/actions/workflows/WORKFLOW_ID/disable
+
+# Rotate ALL credentials the agent had access to
+# (Do NOT delete the original credential metadata — preserve for forensic comparison)
+# Reference: docs/secret-lifecycle-management.md for rotation procedures
+
+# Terminate active agent sessions AFTER evidence capture
+kubectl delete pod -n ai-pipeline \
+  --selector app=ai-agent \
+  --grace-period=60
+# Allow 60 seconds for graceful shutdown; reduces log truncation risk
+```
+
+**Preserve the following before any pod deletion:**
+- Agent audit trail records from the append-only log store (do NOT rotate the audit S3 bucket)
+- System prompt version in use at the time of the incident (model registry or ConfigMap)
+- Tool authorization policy version active at the time of the incident
+- Input/output log entries from the behavioral monitoring system
+
 **Compliance (Compliance Automation Framework):**
 
 - Alert compliance team that evidence collection may have been affected
@@ -196,6 +249,63 @@ cosign download attestation --type slsaprovenance \
   registry.internal/your-app:${SUSPICIOUS_TAG} | \
   jq -r '.payload | @base64d | fromjson'
 ```
+
+**AI/Agent Systems Investigation (Forensics and IR Framework — Five Forensic Questions):**
+
+Apply the Five Forensic Questions framework to bound the agent investigation:
+
+```bash
+# Q1 — What did the agent do? (Reconstruct tool call sequence)
+# Retrieve audit trail records for the agent session
+aws s3 cp \
+  s3://immutable-audit-store/agent-audit/$(date +%Y/%m/%d)/ \
+  /investigation/agent-audit/ \
+  --recursive \
+  --sse aws:kms
+
+# Parse tool calls from audit records
+jq -s '
+  sort_by(.timestamp) |
+  .[] | select(.agent_session_id == "SESSION_ID") |
+  {ts: .timestamp, tool: .tool_name, params: .tool_parameters, status: .authorization_status}
+' /investigation/agent-audit/*.jsonl
+
+# Q2 — What was the agent instructed to do? (Recover system prompt and user instruction)
+# Retrieve the system prompt version from the model registry
+kubectl get configmap agent-system-prompt \
+  -n ai-pipeline \
+  -o jsonpath='{.data.system_prompt}' \
+  > /investigation/system-prompt-at-incident.txt
+
+# Q3 — What data did the agent access or transmit?
+# Cross-reference tool call parameters against data classification inventory
+# Look for filesystem reads, network calls, or database queries in audit records
+jq -s '
+  .[] | select(.agent_session_id == "SESSION_ID") |
+  select(.tool_name | test("read_file|http_request|query_database|list_directory")) |
+  {ts: .timestamp, tool: .tool_name, target: .tool_parameters}
+' /investigation/agent-audit/*.jsonl
+
+# Q4 — What tools did it invoke and with what parameters?
+# Full tool call inventory with parameters (not just names)
+jq -s '[.[] | select(.agent_session_id == "SESSION_ID")] | group_by(.tool_name) |
+  map({tool: .[0].tool_name, invocation_count: length, sample_params: .[0].tool_parameters})
+' /investigation/agent-audit/*.jsonl
+
+# Q5 — What was the authorization basis?
+# Identify UNAUTHORIZED or UNDETERMINED tool calls
+jq -s '.[] | select(.agent_session_id == "SESSION_ID") |
+  select(.authorization_status != "AUTHORIZED") |
+  {ts: .timestamp, tool: .tool_name, status: .authorization_status, reason: .authorization_reason}
+' /investigation/agent-audit/*.jsonl
+
+# Check for prompt injection indicators in the input log
+grep -iE "(ignore previous|system:.*override|assistant:.*overrule|<\|im_start\|>|<\|system\|>)" \
+  /evidence/agent-session-*.log \
+  | tee /investigation/injection-indicators.txt
+```
+
+**Evidence gap analysis:** If the audit trail cannot answer all Five Questions, document the gap explicitly. Missing Q2 (system prompt version) or Q5 (authorization basis) constitutes incomplete forensic evidence and must be flagged in the post-incident report. Cross-reference with `forensics-and-incident-response-framework/docs/agent-forensics/five-questions-framework.md` for evidence gap remediation guidance.
 
 **Cloud infrastructure investigation:**
 
@@ -297,6 +407,8 @@ python3 compliance_tools/audit_packager.py \
 | Cloud Security | Was the initial compromise detectable in cloud logs within acceptable MTTD? |
 | Compliance Automation | Was evidence collection unaffected? Can an audit package be generated that covers the incident period? |
 | DevSecOps Maturity | Which maturity gaps enabled this incident? How does this change the improvement roadmap? |
+| AI DevSecOps Framework | Were all AI agent tool calls within the defined authorization policy? Was the agent's system prompt version at the time of the incident recorded? Did behavioral monitoring alerts fire before human detection? Was there evidence of prompt injection in the agent's input log? |
+| Forensics and IR Framework | Could all Five Forensic Questions be answered from the audit trail? If not, which questions had evidence gaps, and what instrumentation was missing? Was the agent behavioral baseline current at the time of the incident? Was session reconstruction possible from the audit trail, or were records incomplete? |
 
 ---
 
@@ -365,6 +477,10 @@ If you have questions, please contact [security contact].
 | Secret rotation procedures | [Secret Lifecycle Management](../../devsecops-framework/docs/secret-lifecycle-management.md) |
 | Compliance evidence under incident | [Evidence Collection Automation](../../compliance-automation-framework/docs/evidence-collection-automation.md) |
 | Release freeze procedures | [Release Orchestration Framework](../../release-orchestration-framework/docs/framework.md) |
+| AI agent forensics — Five Questions | [Five Questions Framework](../../forensics-and-incident-response-framework/docs/agent-forensics/five-questions-framework.md) |
+| AI agent behavioral baseline | [AI Behavioral Baseline](../../forensics-and-incident-response-framework/docs/ai-behavioral-baseline.md) |
+| AI agent containment — tool authorization | [Agent Authorization](../../ai-devsecops-framework/docs/agent-authorization.md) |
+| AI agent audit trail preservation | [Agent Audit Trail](../../ai-devsecops-framework/docs/agent-audit-trail.md) |
 | Framework selection | [Framework Selection Guide](framework-selection-guide.md) |
 
 *Part of the Techstream central documentation. Licensed under Apache 2.0.*
