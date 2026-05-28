@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+title: "TechStream Documentation Portal"
+message: "If you reference, cite, or build upon this framework, please cite it as below."
+type: software
+authors:
+  - family-names: Sotille
+    given-names: Felipe
+    affiliation: "TechStream (Independent)"
+    email: "fsotille@gmail.com"
+repository-code: "https://github.com/sotille/techstream-docs"
+url: "https://www.techstream.app"
+license: Apache-2.0
+version: "1.0.0"
+date-released: "2026-05-17"
+abstract: >-
+  Master documentation portal for the TechStream DevSecOps framework ecosystem. Ties together the ten reference frameworks, provides ecosystem maps, adoption sequences by organizational profile, and a glossary of 50+ DevSecOps terms cross-referenced with federal-standards definitions.
+keywords:
+  - techstream
+  - devsecops
+  - framework-portfolio
+  - federal-alignment
+  - ssdf
+  - documentation-portal
